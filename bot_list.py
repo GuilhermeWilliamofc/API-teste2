@@ -3,6 +3,7 @@ import os
 import threading
 import asyncio
 import requests
+import time
 from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -158,9 +159,18 @@ def gerar_html_audios(input_txt, output_txt):
 def gerar_html():
     input_txt = "links_dos_arquivos.txt"
     output_txt = "saida.txt"
-    # Não baixa mais de URL externa, apenas usa o arquivo local
+    tempo_limite = 30  # segundos
+    tempo_esperado = 0
+    intervalo = 1  # segundos
+
+    # Espera até o arquivo ser criado ou até o tempo limite
+    while not os.path.exists(input_txt) and tempo_esperado < tempo_limite:
+        time.sleep(intervalo)
+        tempo_esperado += intervalo
+
     if not os.path.exists(input_txt):
         return {"erro": "Arquivo de links não encontrado"}
+
     gerar_html_audios(input_txt, output_txt)
     return FileResponse(output_txt, filename="saida.txt", media_type="text/plain")
 
