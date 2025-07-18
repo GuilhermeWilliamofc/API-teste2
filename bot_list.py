@@ -5,7 +5,7 @@ import asyncio
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 
-TOKEN = ""
+TOKEN = os.getenv("TOKEN")
 IGNORAR_CATEGORIAS = [
     "╭╼ 🌐Uploader Mode",
     "╭╼ 👥Chat",
