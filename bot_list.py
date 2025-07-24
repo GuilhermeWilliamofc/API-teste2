@@ -95,11 +95,15 @@ def get_links():
 
 
 @app.get("/atualizar_links")
-async def atualizar_links():
+def atualizar_links():
     if not client.is_ready():
         return {"erro": "Bot do Discord ainda não está pronto"}
-    await coletar_links()
-    return {"status": "Coleta de links atualizada com sucesso"}
+
+    async def executar():
+        await coletar_links()
+
+    asyncio.run_coroutine_threadsafe(executar(), client.loop)
+    return {"status": "Coleta de links em andamento"}
 
 
 def baixar_txt_url(url, nome_saida):
