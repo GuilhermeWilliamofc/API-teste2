@@ -25,7 +25,6 @@ intents.guilds = True
 client = discord.Client(intents=intents)
 app = FastAPI()
 
-# Adiciona CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -74,7 +73,7 @@ async def coletar_links():
                     links_por_canal.append(f"# {categoria.name} / {canal_nome}\n")
                     for link in links:
                         links_por_canal.append(link + "\n")
-                    links_por_canal.append("\n")  # Espaço extra entre canais
+                    links_por_canal.append("\n")
 
     with open("links_dos_arquivos.txt", "w", encoding="utf-8") as f:
         f.writelines(links_por_canal)
@@ -86,7 +85,6 @@ async def coletar_links():
 async def on_ready():
     print(f"✅ Bot logado como {client.user}")
     await coletar_links()
-    await client.close()
 
 
 @app.get("/links")
@@ -173,7 +171,6 @@ def gerar_html():
     tempo_esperado = 0
     intervalo = 1  # segundos
 
-    # Espera até o arquivo ser criado ou até o tempo limite
     while not os.path.exists(input_txt) and tempo_esperado < tempo_limite:
         time.sleep(intervalo)
         tempo_esperado += intervalo
