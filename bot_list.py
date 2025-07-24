@@ -4,7 +4,7 @@ import threading
 import asyncio
 import requests
 import time
-from fastapi import FastAPI, Query
+from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -39,10 +39,7 @@ def limpar_nome(nome):
     return nome.replace("/", "-").replace("\\", "-").replace(":", "-")
 
 
-@client.event
-async def on_ready():
-    print(f"✅ Bot logado como {client.user}")
-
+async def coletar_links():
     links_por_categoria = {}
 
     for guild in client.guilds:
@@ -66,7 +63,6 @@ async def on_ready():
             except Exception as e:
                 print(f"⚠️ Erro no canal {canal.name}: {e}")
 
-    # Ordena as categorias e canais conforme a ordem do servidor
     links_por_canal = []
     for guild in client.guilds:
         for categoria in guild.categories:
@@ -84,6 +80,12 @@ async def on_ready():
         f.writelines(links_por_canal)
 
     print("✅ Coleta de links concluída!")
+
+
+@client.event
+async def on_ready():
+    print(f"✅ Bot logado como {client.user}")
+    await coletar_links()
     await client.close()
 
 
@@ -92,6 +94,14 @@ def get_links():
     if os.path.exists("links_dos_arquivos.txt"):
         return FileResponse("links_dos_arquivos.txt", media_type="text/plain")
     return {"erro": "Arquivo não encontrado"}
+
+
+@app.get("/atualizar_links")
+async def atualizar_links():
+    if not client.is_ready():
+        return {"erro": "Bot do Discord ainda não está pronto"}
+    await coletar_links()
+    return {"status": "Coleta de links atualizada com sucesso"}
 
 
 def baixar_txt_url(url, nome_saida):
