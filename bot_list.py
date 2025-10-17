@@ -169,21 +169,12 @@ def gerar_html_audios(input_txt, output_txt):
 
 @app.get("/gerar_html")
 def gerar_html():
-    input_txt = "links_dos_arquivos.txt"
     output_txt = "saida.txt"
-    tempo_limite = 30  # segundos
-    tempo_esperado = 0
-    intervalo = 1  # segundos
 
-    while not os.path.exists(input_txt) and tempo_esperado < tempo_limite:
-        time.sleep(intervalo)
-        tempo_esperado += intervalo
-
-    if not os.path.exists(input_txt):
-        return {"erro": "Arquivo de links não encontrado"}
-
-    gerar_html_audios(input_txt, output_txt)
-    return FileResponse(output_txt, filename="saida.txt", media_type="text/plain")
+    if os.path.exists(output_txt):
+        return FileResponse(output_txt, filename="saida.txt", media_type="text/plain")
+    else:
+        return {"erro": "Nenhum HTML gerado ainda. Use /atualizar_links primeiro."}
 
 
 def start_bot():
