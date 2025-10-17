@@ -101,9 +101,16 @@ def atualizar_links():
 
     async def executar():
         await coletar_links()
+        loop = asyncio.get_running_loop()
+        try:
+            # gera o HTML a partir do arquivo de links rec�m-criado
+            await loop.run_in_executor(None, gerar_html_audios, "links_dos_arquivos.txt", "saida.txt")
+            print("✅ HTML gerado: saida.txt")
+        except Exception as e:
+            print(f"⚠ Erro ao gerar HTML: {e}")
 
     asyncio.run_coroutine_threadsafe(executar(), client.loop)
-    return {"status": "Coleta de links em andamento"}
+    return {"status": "Coleta de links e geração de HTML em andamento"}
 
 
 def baixar_txt_url(url, nome_saida):
